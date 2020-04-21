@@ -11,7 +11,7 @@
     security_groups: "{{ item.value.security_group }}"
     key_name: ansible_ssh
     nics:
-    - net-name: private1
+    - net-name: int_network
     userdata: |
       #!/bin/bash
       curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
@@ -20,6 +20,7 @@
       cp /tmp/internal.repo /etc/yum.repos.d/internal.repo
   with_dict: "{{ osp_servers }}"
   register: new_instance
+  tags: os_create
 
 - name: Add floating IP to server "{{ item.value.name }}"
   os_floating_ip:
@@ -27,15 +28,23 @@
     state: present
     reuse: yes
     server: "{{ item.value.name }}"
-    network: public
+    network: ext_network
     wait: true
     timeout: 180
   register: instance_floatingip
   with_dict: "{{ osp_servers }}"
+  tags: os_floatingip
 
+- name: Make a list of instances
+  os_server_info:
+    cloud: ospcloud
+  register: osp_instances
 
-- name: Wait for server "{{ item.value.name }}" to be available
+- name: Wait for servers to become available
   wait_for:
-
-
-
+    host: "{{ item.public_v4 }}"
+    port: 22
+    delay: 30
+    timeout: 300
+  with_items: "{{ osp_instances.openstack_servers }}"
+  tags: os_instanceup
