@@ -22,7 +22,7 @@
   register: new_instance
   tags: os_create
 
-- name: Add floating IP to server "{{ item.value.name }}"
+- name: Add floating IP to server 
   os_floating_ip:
     cloud: ospcloud
     state: present
