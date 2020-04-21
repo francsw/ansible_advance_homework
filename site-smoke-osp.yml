@@ -8,7 +8,13 @@
     register: openstack_info
     tags:
       - osp.smoke
+
   - name: Curl website
+      uri:
+        url: http://"{{ item.public_v4 }}"/ansible
+        return_content: yes
+      register: webpage
+      with_items: "{{ osp_instances.openstack_servers }}"
 
   - name: Fail if 'Ansible has done its job' is not in the page content
     fail:

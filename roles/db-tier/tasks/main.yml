@@ -1,2 +1,36 @@
 ---
 # tasks file for db-tier
+# Install and configure PostgreSQL
+#
+
+- name: Install postgres server package
+  package:
+    name: postgresql-server
+    state: present
+  tags:
+    - dbs 
+    - postgres
+
+- name: Check if Postgresql have already been initialized
+  stat:
+    path: /var/lib/pgsql/data/PG_VERSION
+  register: pg_version_check
+  tags:
+    - dbs 
+    - postgres
+
+- name: Initialize Postgresql DB
+  shell: postgresql-setup initdb
+  when: not pg_version_check.stat.exists
+  tags:
+    - dbs 
+    - postgres
+
+- name: Start and enable postgresql
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+  tags:
+    - dbs 
+    - postgres

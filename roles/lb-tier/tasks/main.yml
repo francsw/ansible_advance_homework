@@ -1,2 +1,36 @@
 ---
 # tasks file for lb-tier
+#
+- name: Install python2-httpie
+  package:
+    name: python2-httpie
+    state: latest
+  tags:
+    - lbs 
+    - haproxy
+
+- name: Install HAProxy
+  package:
+    name: haproxy
+    state: latest
+  tags:
+    - lbs 
+    - haproxy
+
+- name: Setup HAProxy config files
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  notify: Restart haproxy
+  tags:
+    - lbs 
+    - haproxy
+
+- name: Enable HAProxy to start at boot
+  service:
+    name: haproxy
+    enabled: yes
+  tags:
+    - lbs 
+    - haproxy
+
