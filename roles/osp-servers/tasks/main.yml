@@ -45,6 +45,6 @@
     host: "{{ item.public_v4 }}"
     port: 22
     delay: 30
-    timeout: 300
+    timeout: 600
   with_items: "{{ osp_instances.openstack_servers }}"
   tags: os_instanceup
