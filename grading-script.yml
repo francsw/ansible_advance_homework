@@ -18,10 +18,11 @@
     register: openstack_info
 
   - name: Curl website
-    command: curl "http://{{item.public_v4}}"
+    command: curl "http://{{item.public_v4}}/ansible/"
     with_items:
        - "{{ openstack_info.ansible_facts.openstack_servers }}"
     register: webpage
+
   - name: Fail
     fail:
     when: "'Ansible' not in webpage.results[0].stdout" 
@@ -31,7 +32,7 @@
   gather_facts: false
   tasks:
   - name: Curl website
-    command: curl "http://frontend1.{{ ANSIBLE_ADVANCE_GUID }}.example.opentlc.com"
+    command: curl "http://frontend1.{{ ANSIBLE_ADVANCE_GUID }}.example.opentlc.com/ansible/"
     register: webpage
   - debug: var=webpage.stdout
   - name: Fail
